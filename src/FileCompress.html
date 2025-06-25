@@ -1,0 +1,48 @@
+<div>
+  <h1>Compress</h1>
+  <input type="file" id="fileInput">
+  <button onclick="run()">Compress</button>
+</div>
+
+
+<script src="compress.js"></script>
+<script>
+Module.onRuntimeInitialized = () => {
+  document.getElementById('fileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const buffer = await file.arrayBuffer();
+    const data = new Uint8Array(buffer); // todo
+    // Write file to virtual FS as /input.txt
+    FS.writeFile('/input.txt', data);
+  });
+};
+
+function run() {
+  Module.ccall('compress');
+  const data = FS.readFile('/output.bin' );
+  const blob = new Blob([data], {type: 'application/octet-stream' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'output.bin';
+  link.click();
+}
+
+function download() {
+  const data = FS.readFile('/output.bin' );
+//   const bits = [];
+
+// for (let i = 0; i < data.length; i++) {
+//   for (let bit = 7; bit >= 0; bit--) {
+//     bits.push((data[i] >> bit) & 1); // Extract each bit (MSB first)
+//   }
+// }
+
+// console.log(bits); // Array of 0s and 1s
+
+  const blob = new Blob([data], {type: 'application/octet-stream' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'output.bin';
+  link.click();
+}
+</script>
